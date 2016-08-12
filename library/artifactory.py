@@ -182,21 +182,9 @@ def main():
             else:
               module.fail_json(msg="Failed to get Artifact information. with status code %s" % (artinfo_info['status']))
         elif len(selected_results) > 1:
-            # Return the last result in set
-            artifact_url = selected_results[-1]['uri']
-            artinfo_resp, artinfo_info = fetch_url(module, artifact_url)
-            if artinfo_info['status'] == 200:
-                # Get the json fun.
-                rjson_ainfo = json.load(artinfo_resp)
-                sha1 = rjson_ainfo['checksums']['sha1']
-                md5 = rjson_ainfo['checksums']['md5']
-                durl = rjson_ainfo['downloadUri']
-                file = durl.split('/')[-1]
-                artinfo_resp.close()
-            else:
-              module.fail_json(msg="Failed to get Artifact information. with status code %s" % (artinfo_info['status']))
+          module.fail_json(msg="The Artifactory search query returned more than one result, please narrow the search.  Multiple artifact download may be supported in the future", result=selected_results)
         else:
-          module.fail_json(msg="The Artifactory search query returned no results.\nURL: %s" % (get_api_call))
+          module.fail_json(msg="The Artifactory search query returned no results.")
     else:
       module.fail_json(msg="Request to Artifactory failed with status code %s" % (urlget_info['status']))
 
@@ -232,3 +220,4 @@ def main():
 from ansible.module_utils.basic import *
 from ansible.module_utils.urls import *
 main()
+
